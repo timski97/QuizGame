@@ -19,8 +19,9 @@ export const Quiz = ({navigation}) => {
   const [curantAnswer, setCurantAnswer] = useState(null);
   const [score, setScore] = useState(0);
   const [finish, setFinish] = useState(false);
-  const flatListRef = useRef(null);
+  const [pressed, setPressed] = useState(null);
 
+  const flatListRef = useRef(null);
   const shuffleArray = array => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -35,17 +36,28 @@ export const Quiz = ({navigation}) => {
       setScore(prev => prev + 1);
     }
     setCurantAnswer(null);
-
     if (ques + 1 >= questions?.length) {
       setQues(0);
       setFinish(true);
+
     } else {
       setQues(prev => prev + 1);
     }
     console.log(iscorrect);
   };
-
-  // console.log(handleNextPress);
+  const handlePrevPress = () => {
+    const iscorrect = questions[ques].correctAnswer === curantAnswer;
+    if (iscorrect) {
+      setScore(prev => prev + 1);
+    }
+    setCurantAnswer(null);
+    if (ques - 1 >= questions?.length) {
+      setQues(0);
+    } else {
+      setQues(prev => prev - 1);
+    }
+    // console.log(iscorrect);
+  };
   const renderItem = ({item}) => {
     const arrayCorrect = [item.correctAnswer, ...item.incorrectAnswers];
     const shuffleRandomArray = shuffleArray(arrayCorrect);
@@ -60,8 +72,12 @@ export const Quiz = ({navigation}) => {
           {shuffleRandomArray.map((answer, index) => (
             <TouchableOpacity
               key={answer + index}
-              style={styles.optionButtom}
+              style={[
+                styles.optionButtom,
+                {backgroundColor: curantAnswer === answer ? 'pink' : '#34A0A4'},
+              ]}
               onPress={() => setCurantAnswer(answer)}>
+              {/* {overlay && <View style={styles.childOverlay} />} */}
               <Text style={styles.option}>{answer}</Text>
             </TouchableOpacity>
           ))}
@@ -96,7 +112,7 @@ export const Quiz = ({navigation}) => {
             removeClippedSubviews={true}
           />
           <View style={styles.bottom}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={handlePrevPress}>
               <Text style={styles.buttonText}>SKIP</Text>
             </TouchableOpacity>
             {true && (
@@ -170,5 +186,15 @@ const styles = StyleSheet.create({
   banner: {
     height: 300,
     width: 300,
+  },
+  ButtonPress: {
+    marginTop: 10,
+    width: 150,
+    height: 50,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#42aaff',
+    activeOpacity: 1,
+    underlayColor: 'rgb(90, 90, 90)'
   },
 });
