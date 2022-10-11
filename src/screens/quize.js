@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -19,17 +19,22 @@ export const Quiz = ({navigation}) => {
   const [curantAnswer, setCurantAnswer] = useState(null);
   const [score, setScore] = useState(0);
   const [finish, setFinish] = useState(false);
-  const [pressed, setPressed] = useState(null);
-
   const flatListRef = useRef(null);
-  const shuffleArray = array => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  };
-
+  // const shuffleArray = array => {
+  //   for (let i = array.length - 1; i > 0; i--) {
+  //     const j = Math.floor(Math.random() * (i + 1));
+  //     [array[i], array[j]] = [array[j], array[i]];
+  //   }
+  //   return array;
+  // };
+  // const shuffleArrayCall = useCallback(shuffleArray, []);
+  // const shuffleArray = useCallback(array => {
+  //   for (let i = array.length - 1; i > 0; i--) {
+  //     const j = Math.floor(Math.random() * (i + 1));
+  //     [array[i], array[j]] = [array[j], array[i]];
+  //   }
+  //   return array;
+  // }, []);
   const handleNextPress = () => {
     const iscorrect = questions[ques].correctAnswer === curantAnswer;
     if (iscorrect) {
@@ -39,7 +44,6 @@ export const Quiz = ({navigation}) => {
     if (ques + 1 >= questions?.length) {
       setQues(0);
       setFinish(true);
-
     } else {
       setQues(prev => prev + 1);
     }
@@ -60,7 +64,8 @@ export const Quiz = ({navigation}) => {
   };
   const renderItem = ({item}) => {
     const arrayCorrect = [item.correctAnswer, ...item.incorrectAnswers];
-    const shuffleRandomArray = shuffleArray(arrayCorrect);
+    const shuffleRandomArray = arrayCorrect.sort();
+
     // console.log(shuffleRandomArray);
 
     return (
@@ -89,6 +94,9 @@ export const Quiz = ({navigation}) => {
   useEffect(() => {
     dispatch(getQuestions());
   }, [dispatch]);
+  // useEffect(() => {
+  //   setRandomArray(shuffleArray(shuffleRandomArray));
+  // }, []);
 
   useEffect(() => {
     flatListRef?.current?.scrollToOffset({
@@ -195,6 +203,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#42aaff',
     activeOpacity: 1,
-    underlayColor: 'rgb(90, 90, 90)'
+    underlayColor: 'rgb(90, 90, 90)',
   },
 });
